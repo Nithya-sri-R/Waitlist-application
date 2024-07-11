@@ -1,0 +1,36 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "description: Node.js server for managing a waitlist application with features like user registration, referral tracking, and email notifications.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nithya-sri-R?tab=repositories"
+  },
+  "keywords": [
+    "nodejs",
+    "server",
+    "waitlist",
+    "user-registration",
+    "referral-tracking",
+    "email-notifications"
+  ],
+  "author": "nithya",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.4",
+    "nodemailer": "^6.9.14",
+    "socket.io": "^4.7.5"
+  }
+}
