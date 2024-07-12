@@ -1,14 +1,15 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import "./Register.css";
 
-const Register = ({ handleLogin }) => {
+const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+   // Handle form submission for user registration
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,17 +25,19 @@ const Register = ({ handleLogin }) => {
     setLoading(true);
 
     try {
+      // Send POST request to register new user
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/api/auth/register`,
         { name, email, password },
-        { withCredentials: true } // Send cookies and credentials
+        { withCredentials: true }
       );
-
-      console.log("Response:", response); // Log response for debugging
 
       if (response.status === 201) {
         toast.success("Registered successfully");
-        handleLogin(); // Redirect or set login state
+        setName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
       } else {
         toast.error(response.data.message || "Failed to register");
       }
@@ -59,40 +62,38 @@ const Register = ({ handleLogin }) => {
         <label>Name</label>
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Enter your name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
         <label>Email</label>
         <input
           type="email"
-          placeholder="Email"
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <label>Password</label>
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <label>Confirm Password</label>
         <input
           type="password"
-          placeholder="Confirm Password"
+          placeholder="Confirm your password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
+          required
         />
-        <button type="submit" className="register-btn" disabled={loading}>
+        <button type="submit" disabled={loading}>
           {loading ? "Registering..." : "Register"}
         </button>
-        <p className="text-yellow-500 text-sm mt-3">
-          Already have an account?{" "}
-          <button className="text-orange-500 underline" onClick={handleLogin}>
-            Login
-          </button>
-        </p>
       </form>
     </div>
   );

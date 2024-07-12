@@ -7,7 +7,10 @@ const Score = ({ socket }) => {
   const { user, token } = UserState();
   const navigate = useNavigate();
   const [leaderboard, setLeaderboard] = useState([]);
+  // Effect to fetch leaderboard data and subscribe to socket events
 
+
+  // Socket.io setup
   useEffect(() => {
     socket.on("updated-leaderboard", (leaderboard) => {
       setLeaderboard(removeDuplicates(leaderboard.users));
@@ -57,9 +60,9 @@ const Score = ({ socket }) => {
   const userEntry = leaderboard.find((item) => item.user && item.user.email === user.email);
 
   return (
-    <div className="flex flex-col items-center justify-start h-[100vh] w-[100vw] gap-5 bg-yellow-50">
+    <div className="flex flex-col items-center justify-start h-[100vh] w-[100vw] gap-5 bg-light-purple">
       <p
-        className="text-4xl mt-5 cursor-pointer"
+        className="text-4xl mt-5 cursor-pointer text-blue-900"
         onClick={() => {
           navigate(-1);
         }}
@@ -70,8 +73,8 @@ const Score = ({ socket }) => {
         Leaderboard
       </p>
       <div className="flex flex-col items-center justify-between w-[100%] mt-5 max-w-lg h-[100%]">
-        <div className="flex h-[65%] w-[90%] bg-white">
-          <ul className="w-[100%] flex flex-col gap-2">
+        <div className="flex h-[65%] w-[90%] bg-white shadow-lg rounded-lg">
+          <ul className="w-[100%] flex flex-col gap-2 p-4">
             {leaderboard.map((item, index) => (
               <li
                 key={item._id}
@@ -109,8 +112,8 @@ const Score = ({ socket }) => {
           </div>
         )}
 
-        <div className="flex flex-col items-center justify-center">
-          <ul>
+        <div className="flex flex-col items-center justify-center mt-4">
+          <ul className="text-blue-900">
             <li>Offer on the iPhone 15 for 1st position</li>
             <li>Earn 1 position forward on each referral</li>
           </ul>

@@ -77,7 +77,6 @@ const joinRoom = async (req, res) => {
 };
 
 // Get the updated leaderboard
-// Get the updated leaderboard
 const getScores = async (req, res) => {
   try {
     const scores = await Room.findOne({ name: "LeaderBoard" }).populate({
@@ -95,7 +94,6 @@ const getScores = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 
 // Generate random referral code for new user
 const generateReferral = (length) => {
@@ -120,7 +118,7 @@ const verifyCode = async (code) => {
     let leaderboard = leaderBoardCollection.users;
 
     leaderboard.map(async (item, index) => {
-      if (item.user.referralCode == code) {
+      if (item.user.referralCode === code) {
         let start = index - 10;
         let end = index - 1;
         let insertItem = item;
@@ -225,8 +223,8 @@ const emailHandler = async (to, name) => {
             <hr style="border:none;border-top:1px solid #eee" />
             <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
               <p>Realtime Waiting List</p>
-              <p>Preethi Shanmugham</p>
-              <a href="https://github.com/preethishanmugham">GitHub Profile</a>
+              <p>Nithya_Sri</p>
+              <a href="https://github.com/Nithya-sri-R">GitHub Profile</a>
             </div>
           </div>
         </div>`,

@@ -1,36 +1,85 @@
-import React, { useState } from "react";
-import Login from "../components/Login";
-import Register from "../components/Register";
-import loginBg from "../utils/LoginPage.png";
-import backgroundImage from "../utils/background.png";
+import React, { useEffect, useState } from 'react';
+import Login from '../components/Login';
+import Register from '../components/Register';
+import comingSoonImage from '../utils/new.jpg'; // Import the image file
+import './LoginPage.css'; // Import custom CSS for LoginPage
 
 const LoginPage = () => {
-  const [login, setLogin] = useState(true);
-  const handleLogin = () => {
-    setLogin(!login);
+  const [isExpanded, setIsExpanded] = useState(false); // State for expanded form container
+  const [showLogin, setShowLogin] = useState(true); // State to toggle between Login and Register forms
+
+  // Toggle function to expand/collapse form container
+  const toggleForm = () => {
+    setIsExpanded(!isExpanded);
   };
+
+  // Function to switch between Login and Register forms
+  const switchForm = () => {
+    setShowLogin(!showLogin);
+  };
+
+  // Function to handle resizing of form container via mouse drag
+  const handleDrag = (e) => {
+    const formContainer = document.querySelector('.form-container'); // Select form container element
+    const wrapper = document.querySelector('.wrapper'); // Select wrapper element
+    const newHeight = e.clientY - wrapper.offsetTop; // Calculate new height based on mouse position
+    if (newHeight > 0 && newHeight < wrapper.offsetHeight - 100) { // Adjusted max height
+      formContainer.style.height = `${newHeight}px`; // Set new height for form container
+    }
+  };
+
+  // Effect to add event listeners for mouse drag on component mount
+  useEffect(() => {
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleDrag); // Remove mousemove listener on mouseup
+    };
+
+    const handleMouseDown = () => {
+      document.addEventListener('mousemove', handleDrag); // Add mousemove listener on mousedown
+    };
+
+    const dragHandle = document.querySelector('.drag-handle'); // Select drag handle element
+    if (dragHandle) {
+      document.addEventListener('mouseup', handleMouseUp); // Add mouseup listener
+      dragHandle.addEventListener('mousedown', handleMouseDown); // Add mousedown listener
+
+      // Cleanup function to remove event listeners when component unmounts
+      return () => {
+        document.removeEventListener('mouseup', handleMouseUp);
+        dragHandle.removeEventListener('mousedown', handleMouseDown);
+      };
+    }
+  }, []); // Empty dependency array ensures effect runs only on mount
+
   return (
-    <>
-<div className="bg-yellow-100/100  h-[100vh] w-[100vw] flex items-center justify-center sm:p-5 md:p-10"style={{ backgroundImage: `url(${backgroundImage})` , backgroundSize: 'cover' }}>
-      
-        <div className=" p-5 sm:p-6 md:p-2 shadow-lg flex items-center  gap-0 justify-center h-[90%]  w-[100%]  max-w-5xl  rounded-lg ">
-          <div className="bg-yellow  relative  w-[100%] md:w-1/2  h-full  items-center justify-center ">
-            <img
-              className="object-cover h-[100%]  w-[100%] rounded-[100%] "
-              src={loginBg}
-            />
-          </div>
-          <div className=" w-[100%] md:w-[50%]  rounded-xl  bg-yellow h-full flex items-center justify-center">
-            {login ? (
-              <Login handleLogin={handleLogin} />
+    <div className="body">
+      <div className="wrapper">
+        <div className="welcome-section">
+          <h1>Welcome to the Waitlist App!</h1>
+          <p>Join our waitlist to stay informed.</p>
+        </div>
+        <div className="form-container">
+          <img src={comingSoonImage} alt="Coming Soon" className="coming-soon-image" /> {/* Render coming soon image */}
+          {showLogin ? <Login /> : <Register />} {/* Conditionally render Login or Register component */}
+          <div className="switch-link">
+            {showLogin ? (
+              <>
+                Don't have an account? <button onClick={switchForm}>Sign up</button> {/* Render signup button */}
+              </>
             ) : (
-              <Register handleLogin={handleLogin} />
+              <>
+                Already have an account? <button onClick={switchForm}>Login</button> {/* Render login button */}
+              </>
             )}
           </div>
         </div>
+        <div className="drag-handle">
+          <i className="fas fa-chevron-up"></i> {/* Render icon for collapsing form */}
+          <i className="fas fa-chevron-down"></i> {/* Render icon for expanding form */}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default LoginPage;
+export default LoginPage; // Export LoginPage component as default

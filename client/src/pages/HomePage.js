@@ -1,97 +1,91 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserState } from "../context/UserProvider";
-import iphone from "../utils/iphone.png";
-import './HomePage.css';
+import { UserState } from "../context/UserProvider"; // Import UserState context for user information
+import iphone from "../utils/iphone.png"; // Import image for iPhone
 
 const HomePage = () => {
-  const { token, setUser, user } = UserState();
-  const navigate = useNavigate();
-  const [slide, setSlide] = useState(false);
+  const { token, setUser, user } = UserState(); // Destructure token, setUser, and user from UserState context
+  const navigate = useNavigate(); // Hook for programmatic navigation
+  const [slide, setSlide] = useState(false); // State to manage slide animation
 
+  // Function to fetch user info from backend
   const getInfo = async (token) => {
     let config = {
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: "Bearer " + token, // Set authorization header with JWT token
       },
-      withCredentials: true,
+      withCredentials: true, // Ensure credentials are sent with the request
     };
 
     try {
+      // Fetch user info from backend API
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/user/get-info`, config);
-      const { user } = response.data;
-      setUser(user);
+      const { user } = response.data; // Destructure user object from response data
+      setUser(user); // Update user context with fetched user data
 
+      // Redirect to join-room page if user hasn't joined a room
       if (!user.joinedRoom) {
-        setSlide(true);
-        setTimeout(() => navigate("/early-register"), 1000);
+        setSlide(true); // Trigger slide animation
+        setTimeout(() => navigate("/join-room"), 1000); // Navigate to join-room page after 1 second
       }
     } catch (err) {
-      localStorage.removeItem("signedJWT");
+      // Handle errors related to invalid JWT or authentication
+      localStorage.removeItem("signedJWT"); // Remove invalid JWT from localStorage
       console.log("Invalid JWT, user not authenticated");
-      navigate("/");
+      navigate("/"); // Redirect to login page
     }
   };
 
+  // Effect to run on component mount or when token changes
   useEffect(() => {
-    const storedToken = JSON.parse(localStorage.getItem("signedJWT"));
+    const storedToken = JSON.parse(localStorage.getItem("signedJWT")); // Retrieve token from localStorage
     if (storedToken) {
-      getInfo(storedToken);
+      getInfo(storedToken); // Fetch user info if token exists in localStorage
     } else {
-      navigate("/");
+      navigate("/"); // Redirect to login page if token doesn't exist
     }
-  }, [navigate]);
+  }, [navigate]); // Dependency array ensures effect runs when navigate changes
 
+  // Effect to run when token changes
   useEffect(() => {
     if (token) {
-      getInfo(token);
+      getInfo(token); // Fetch user info if token is updated
     }
-  }, [token]);
+  }, [token]); // Dependency array ensures effect runs when token changes
 
+  // Effect to redirect to admin dashboard if user is an admin
   useEffect(() => {
     if (user && user.isAdmin) {
-      navigate("/admin-dashboard"); // Redirect to Admin Dashboard if user is an admin
+      navigate("/admin-dashboard"); // Redirect to admin-dashboard if user is admin
     }
-  }, [user, navigate]);
+  }, [user, navigate]); // Dependency array ensures effect runs when user or navigate changes
 
   return (
-    <div className="container">
-      <div className={`background ${slide ? 'slide-out' : 'slide-in'}`}>
-        <div className="bg-yellow-100 h-[100vh] w-[100vw] flex items-center justify-center sm:p-5 md:p-10">
-          <div className="h-[100vh] w-[100vw] bg-yellow overflow-x-hidden relative flex flex-col">
-            <img src={iphone} className="object-contain w-[60%] h-[70%] sm:w-[100%] sm:h-[-100%] absolute top-[15%] left-[-1000%] sm:left-[-900%] md:left-[-10%]" />
-          </div>
-          <div className="mt-[-10%] w-[100%] flex-1 flex justify-center items-center">
-            {user && (
-              <div className="mt-[10%] md:mt-[7%] sm:mx-[10%] z-10 relative">
-                {!user.joinedRoom && (
-                  <p className="text-2xl cursor-pointer sm:text-2xl md:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-yellow-500">
-                    <Link to="/early-register"> Register</Link>
-                    <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                  </p>
-                )}
-                {user.joinedRoom && (
-                  <div className="flex justify-center items-center h-screen">
-                    <p className="text-2xl cursor-pointer sm:text-2xl md:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-yellow-500">
-                      <Link to="/leader-board">Leaderboard</Link>
-                      <i className="fa-solid fa-chevron-right"></i>
-                    </p>
-                  </div>
-                )}
-                {user.winner && (
-                  <p className="text-2xl cursor-pointer sm:text-2xl md:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-800 via-purple-700 to-pink-600">
-                    <Link to="/reedem-coupons"> Coupons</Link>
-                    <i className="fa-solid fa-chevron-right"></i>
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-pink-300 to-purple-300">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="relative">
+          <img src={iphone} className="object-contain w-full rounded-lg shadow-lg" alt="iPhone" /> {/* Render iPhone image */}
+        </div>
+        <div className="flex flex-col justify-center items-center space-y-8">
+          <h1 className="text-3xl md:text-5xl font-bold text-blue-900">Support My Work</h1> {/* Render heading */}
+          {user && ( // Conditional rendering based on user existence
+            <div className="space-y-4 text-center">
+              {!user.joinedRoom && ( // Render button to join room if user hasn't joined
+                <button onClick={() => navigate("/join-room")} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md transition duration-300">Join Room</button>
+              )}
+              {user.joinedRoom && ( // Render link to leaderboard if user has joined a room
+                <Link to="/leader-board" className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-6 rounded-lg shadow-md transition duration-300">View Leaderboard</Link>
+              )}
+              {user.winner && ( // Render link to redeem coupons if user is a winner
+                <Link to="/redeem-coupons" className="bg-purple-500 hover:bg-purple-600 text-white py-2 px-6 rounded-lg shadow-md transition duration-300">Redeem Coupons</Link>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default HomePage;
+export default HomePage; // Export HomePage component as default

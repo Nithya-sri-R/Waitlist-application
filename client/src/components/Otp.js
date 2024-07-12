@@ -81,7 +81,7 @@ const Otp = () => {
   return (
     <div className="w-full sm:w-[90%] max-w-md flex-1 sm:h-[80%] pb-4 mb-16 sm:mb-5 sm:rounded-lg sm:shadow-lg flex flex-col justify-start items-center">
       <img
-        className="h-[30%] px-5 ml-[20%] sm:ml-[17%] mt-10 sm:mt-5"
+        className="h-[30%] px-5 ml-auto mr-auto mt-10"
         src={otpImg}
         alt="OTP"
       />
@@ -96,10 +96,11 @@ const Otp = () => {
             resendOTP={() => {}}
             setVerifying={setVerifying}
             verifying={verifying}
+            time={10} // Set the countdown time to 10 seconds
           />
         ) : (
           <p className="font-thin">
-            Expires in: <span className="font-bold">00:10</span>
+            Expires in: <span className="font-bold text-red-500">00:10</span> seconds
           </p>
         )}
 

@@ -3,6 +3,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../model/User.js'; // Adjust path to your User model
 
+// Middleware to protect routes that require authentication
 const protectedMiddleware = async (req, res, next) => {
   try {
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {

@@ -9,7 +9,7 @@ const JoinRoom = ({ socket }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-gap gap-10 h-full w-full bg-slate-100">
+    <div className="flex flex-col items-center justify-center gap-10 min-h-screen w-full bg-[#f3e8ff]">
       <p
         onClick={() => navigate(-1)}
         className="text-4xl mt-14 cursor-pointer"
