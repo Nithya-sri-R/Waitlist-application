@@ -87,7 +87,7 @@ To set up the backend of the Waitlist Application, follow these steps:
    - This will launch the backend server at `http://localhost:8000`.
 
 6. **API Routes**:
-   - Here are the API routes available in the backend:
+   - Here are the API routes available in the backend u can check it using postman:
 
      - **Register a User**:
        - Method: POST
@@ -145,6 +145,13 @@ To set up the backend of the Waitlist Application, follow these steps:
        - Description: Allows a verified user to join a room.
        - if u need any body json u can give
        - header key-'Authorization' value-"Bearer "+ token
+       - Request Body:
+           ```json
+           {
+             "userId": "<give :_id>"
+           }
+           
+         ```
       - **Get users Details**:
        - Method: GET
        - URL: `http://localhost:8000/api/room/get`
