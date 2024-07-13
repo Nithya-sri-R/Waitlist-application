@@ -10,29 +10,6 @@ Welcome to the Waitlist Application, a platform designed to manage a waiting lis
 - **Referral System**: Using the referral link, customers move up one place in their position for each friend who signs up.
 - **Coupon Code**: When a customer reaches position 1, they receive an email with a coupon code.
 
-### 🛠️ Installation
-
-To set up the Waitlist Application locally, follow these steps:
-
-1. **Node.js**: Download and install Node.js from [https://nodejs.org/](https://nodejs.org/).
-
-2. **MongoDB**: Install MongoDB on your system by following the instructions at [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community).
-
-3. **Clone the Repository**: Clone the Waitlist Application repository to your local machine:
-
-   ```bash
-   git clone https://github.com/Nithya-sri-R/Waitlist-application
-
-### 👨‍💼 Administrator Area:
-- Create, edit, read, list, and delete waiting lists.
-- View the list of customers who signed up for the waiting list.
-
-### 🌐 Frontend:
-- Sign-up form for potential customers to enter their email address and join the waiting list.
-- Display the customer's position immediately after signing up.
-- Provide a unique referral link upon sign-up.
-- Send an email when a customer reaches position 1. 📧
-
 ## 🛠️ Installation
 
 To set up the Waitlist Application, follow these steps:
@@ -54,6 +31,16 @@ To set up the Waitlist Application, follow these steps:
      - Visit the [Waitlist Application GitHub repository](https://github.com/Nithya-sri-R/Waitlist-application).
      - Click on the green "Code" button and select "Download ZIP".
      - Extract the downloaded ZIP file to a directory of your choice on your local computer.
+
+### 👨‍💼 Administrator Area:
+- Create, edit, read, list, and delete waiting lists.
+- View the list of customers who signed up for the waiting list.
+
+### 🌐 Frontend:
+- Sign-up form for potential customers to enter their email address and join the waiting list.
+- Display the customer's position immediately after signing up.
+- Provide a unique referral link upon sign-up.
+- Send an email when a customer reaches position 1. 📧
 
 ## 🛠️ Backend Setup
 
