@@ -1,14 +1,27 @@
-# 📱 Waitlist Application
+# 🚀 Waitlist Application
 
-## 🚀 Overview
-Welcome to the Waitlist Application, a platform designed to help potential customers sign up for a waiting list for a new iPhone product. This application is built using the MERN stack (MongoDB, Express.js, React.js, Node.js) to provide a seamless user experience. 🌟
+## 📱 Overview
+Welcome to the Waitlist Application, a platform designed to manage a waiting list for a new iPhone product. This application is built using the MERN stack (MongoDB, Express.js, React.js, Node.js) to provide a seamless user experience.
 
-### 📋 Functionality Required in the Application:
-- **Sign Up**: Potential customers can sign up for the waiting list by providing their email address.
-- **Position Display**: After signing up, customers can view their position on the waiting list.
+### 📋 Application Features:
+- **Sign Up**: Potential customers can sign up for the waiting list using their email address.
+- **Position Display**: Customers can view their position on the waiting list after signing up.
 - **Unique Referral Link**: Customers receive a unique referral link to share with friends.
-- **Referral System**: If a friend signs up using the referral link, the customer moves up one place in their position.
-- **Coupon Code**: When a customer reaches position 1, they receive an email with a coupon code to purchase the new product.
+- **Referral System**: Using the referral link, customers move up one place in their position for each friend who signs up.
+- **Coupon Code**: When a customer reaches position 1, they receive an email with a coupon code.
+
+### 🛠️ Installation
+
+To set up the Waitlist Application locally, follow these steps:
+
+1. **Node.js**: Download and install Node.js from [https://nodejs.org/](https://nodejs.org/).
+
+2. **MongoDB**: Install MongoDB on your system by following the instructions at [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community).
+
+3. **Clone the Repository**: Clone the Waitlist Application repository to your local machine:
+
+   ```bash
+   git clone https://github.com/Nithya-sri-R/Waitlist-application
 
 ### 👨‍💼 Administrator Area:
 - Create, edit, read, list, and delete waiting lists.
@@ -32,43 +45,155 @@ To set up the Waitlist Application, follow these steps:
 
    ```bash
    git clone https://github.com/preethishanmugham/Waitlist_Application.git
+   cd Waitlist_Application
    ```
 
-4. **Backend Setup**:
-   - Navigate to the `backend` folder in the cloned repository.
-   - Install backend dependencies:
+## 🛠️ Backend Setup
+
+To set up the backend of the Waitlist Application, follow these steps:
+
+1. **Navigate to the Backend Folder**:
+   - Open your terminal or command prompt.
+   - Change directory to the `server` folder within the cloned repository:
 
      ```bash
-     cd backend
+     cd server
+     ```
+
+2. **Install Backend Dependencies**:
+   - Run the following command to install all necessary backend dependencies:
+
+     ```bash
      npm install
      ```
 
-   - Create a `.env` file in the `backend` folder and configure your MongoDB connection URI:
+3. **Create a `.env` File**:
+   - Inside the `server` folder, create a `.env` file.
+   - Configure the `.env` file with the following environment variables:
 
-     ```
-     MONGODB_URI=your_mongodb_connection_uri
+     ```dotenv
+     PORT=8000
+   MONGO_URL=mongodb+srv://rnithyasri34:W6B9VfKIr9rb56RK@cluster0.qw5cqqh.mongodb.net/Waitlist-app?retryWrites=true&w=majority&appName=Cluster0
+     EMAIL=rnithyasri34@gmail.com
+     PASSWORD=vscgkjnpohapuksq
+     JWT_SECRET=2bc347bc3d0726ef2079a1945bc1bcf14c71a188e2a207196e5708e0655e58c1
      ```
 
-   - Start the backend server:
+   .
+
+4. **Start the Backend Server**:
+   - Start the backend server by running:
+
+     ```bash
+     node index.js
+     ```
+
+   - This will launch the backend server at `http://localhost:8000`.
+
+5. **API Routes**:
+   - Here are the API routes available in the backend:
+
+     - **Register a User**:
+       - Method: POST
+       - URL: `http://localhost:8000/api/auth/register`
+       - Description: Registers a new user.
+       - Request Body:
+         ```json
+         {
+           "name": "John",
+           "email": "john@example.com",
+           "password": "your_password"
+         }
+         ```
+
+     - **Login a User**:
+       - Method: POST
+       - URL: `http://localhost:8000/api/auth/login`
+       - Description: Logs in an existing user.
+       - Request Body:
+         ```json
+         {
+           "email": "john@example.com",
+           "password": "your_password"
+         }
+         ```
+
+     - **Send OTP**:
+       - Method: POST
+       - URL: `http://localhost:8000/api/auth/send-otp`
+       - Headers: `Authorization: Bearer <your_jwt_token>`
+       - Description: Sends OTP to the user's email for verification.
+       - Request Body:
+         ```json
+         {
+           "email": "john@example.com"
+         }
+         ```
+
+     - **Verify OTP**:
+       - Method: POST
+       - URL: `http://localhost:8000/api/auth/verify-otp`
+       - Headers: `Authorization: Bearer <your_jwt_token>`
+       - Description: Verifies the OTP entered by the user.
+       - Request Body:
+         ```json
+         {
+           "otp": "1234"
+         }
+         ```
+
+     - **Join Room**:
+       - Method: POST
+       - URL: `http://localhost:8000/api/room/join`
+       - Middleware: `protectedMiddleware`
+       - Description: Allows a verified user to join a room.
+       - if u need any body json u can give
+       - header key-'Authorization' value-"Bearer "+ token
+      - **Get Room Details**:
+       - Method: GET
+       - URL: `http://localhost:8000/api/room/get`
+       - Middleware: `protectedMiddleware`
+       - Description: Retrieves details of the room.
+       - Returns: Room details or relevant information.
+
+## 🛠️ Frontend Setup
+
+To set up the frontend of the Waitlist Application, follow these steps:
+
+1. **Navigate to the Frontend Folder**:
+   - Open another terminal or command prompt window.
+   - Change directory to the `client` folder within the cloned repository:
+
+     ```bash
+     cd client
+     ```
+
+2. **Install Frontend Dependencies**:
+   - Run the following command to install all necessary frontend dependencies:
+
+     ```bash
+     npm install
+     ```
+
+3. **Create a `.env` File**:
+   - Inside the `client` folder, create a `.env` file.
+   - Set the base URL for the frontend to communicate with the backend:
+
+     ```dotenv
+     REACT_APP_BASE_URL=http://localhost:8000
+     ```
+
+4. **Start the Frontend Development Server**:
+   - Start the frontend development server by running:
 
      ```bash
      npm start
      ```
 
-5. **Frontend Setup**:
-   - Navigate to the `frontend` folder in the cloned repository.
-   - Install frontend dependencies:
+   - This will launch the frontend application at `http://localhost:3000`.
 
-     ```bash
-     cd frontend
-     npm install
-     ```
-
-   - Start the frontend development server:
-
-     ```bash
-     npm start
-     ```
+5. **Access the Application**:
+   - Open your web browser and visit [http://localhost:3000](http://localhost:3000) to access the Waitlist Application.
 
 6. **Access the Application**: Open your web browser and visit [http://localhost:3000](http://localhost:3000) to access the Waitlist Application.
 
@@ -88,13 +213,55 @@ To set up the Waitlist Application, follow these steps:
 
 To access the administrator area, log in with your admin credentials.
 
-- **Username**: admin123@gmail.com
-- **Password**: 12345
+- **Username**: rnithyasri34@gmail.com
+- **Password**: Saras@1976
+
+## API Routes
+User Routes
+POST https://8000/api/auth/register
+Registers a new user.
+Sample request body:
+   {
+  "name": "John",
+  "email": "john@example.com",
+  "password": "123"
+   }
+Login a User
+POST /api/auth/login
+Logs in an existing user.
+Sample request body:
+    {
+  "email": "john@example.com",
+  "password": "123"
+    }
+Send OTP:
+Method: POST
+URL: http://localhost:8000/api/auth/send-otp
+Headers: Authorization: Bearer <your_jwt_token>
+
+Verify OTP:
+Method: POST
+URL: http://localhost:8000/api/auth/verify-otp
+Headers: Authorization: Bearer <your_jwt_token>
+Body:
+ {
+  "otp": "1234"
+}
+Join Room
+
+- **POST** `/api/room/join`
+  - Description: Allows a verified user to join a room.
+  - Middleware: `protectedMiddleware`
+  - Controller: `joinRoom`
+  - Example:
+    ```json
+    {
+      "userId": "your_user_id_here",
+      "roomId": "your_room_id_here"
+    }
+    ```
+  - Returns: Success message upon successfully joining the room.
 
 ## 🎉 Conclusion
-
-![WhatsApp Image 2023-09-26 at 00 41 41](https://github.com/preethishanmugham/Waitlist_Application/assets/105535453/811404d0-b458-4cec-9ab1-e16f9aa51520)
-![WhatsApp Image 2023-09-26 at 00 41 42](https://github.com/preethishanmugham/Waitlist_Application/assets/105535453/c637c1f7-fd94-4396-9a17-ff87537e3c1a)
-![WhatsApp Image 2023-09-26 at 00 41 42](https://github.com/preethishanmugham/Waitlist_Application/assets/105535453/85fc9d8a-5ac7-4ca9-b955-bd9cddd92f1e)
 
 The Waitlist Application is designed to provide a smooth and interactive experience for potential customers eager to join the waiting list for a new iPhone product. It includes both user and administrator features to manage and monitor the waiting list effectively. Enjoy using the application and welcoming customers to the world of exciting new products! 📱✨
