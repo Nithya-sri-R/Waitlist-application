@@ -145,11 +145,11 @@ To set up the backend of the Waitlist Application, follow these steps:
        - Description: Allows a verified user to join a room.
        - if u need any body json u can give
        - header key-'Authorization' value-"Bearer "+ token
-      - **Get Room Details**:
+      - **Get users Details**:
        - Method: GET
        - URL: `http://localhost:8000/api/room/get`
        - Middleware: `protectedMiddleware`
-       - Description: Retrieves details of the room.
+       - Description: Retrieves details of the joined room users.
        - Returns: Room details or relevant information.
 
 ## 🛠️ Frontend Setup
