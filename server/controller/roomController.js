@@ -1,8 +1,8 @@
-import dotenv from 'dotenv'; // Import dotenv directly
-import nodemailer from "nodemailer";
-import { emailConfig } from "../config/nodemailer.js";
-import Room from "../model/Room.js";
-import User from "../model/User.js";
+import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
+import { emailConfig } from '../config/nodemailer.js';
+import Room from '../model/Room.js';
+import User from '../model/User.js';
 
 // Configure dotenv to load environment variables
 dotenv.config();
@@ -10,19 +10,19 @@ dotenv.config();
 // Register the user for the iPhone 14
 const joinRoom = async (req, res) => {
   try {
-    // Protected route gets user from the middleware
     const { email } = req.user;
-
-    // Getting the referral code sent by user
     const { referral } = req.body;
 
+    // Check if referral code is provided
     if (referral && referral.length > 0) {
-      console.log("Checking referral code");
+      console.log('Checking referral code');
       await verifyCode(referral);
     }
 
+    // Generate a random referral code for the new user
     const randomCode = generateReferral(6);
 
+    // Update the user's joinedRoom status and referral code
     const updatedUser = await User.findOneAndUpdate(
       { email },
       { joinedRoom: true, referralCode: randomCode },
@@ -30,75 +30,63 @@ const joinRoom = async (req, res) => {
     );
 
     if (!updatedUser) {
-      console.error("User not found or update failed");
-      return res.status(404).json({ error: "User not found or update failed" });
+      console.error('User not found or update failed');
+      return res.status(404).json({ error: 'User not found or update failed' });
     }
 
-    let isRoom = await Room.findOne({ name: "LeaderBoard" }).populate({
-      path: "users.user",
-      model: "User",
-    });
+    // Find the LeaderBoard room
+    let room = await Room.findOne({ name: 'LeaderBoard' });
 
-    let position = 99;
-    let updatedRoom = {};
-
-    if (isRoom) {
-      position += isRoom.users.length + 1;
-
-      updatedRoom = await Room.findOneAndUpdate(
-        { name: "LeaderBoard" },
-        { $push: { users: { user: updatedUser._id, position: position + 1 } } },
-        { new: true }
-      );
-    } else {
-      await Room.create({ name: "LeaderBoard", users: [] });
-
-      updatedRoom = await Room.findOneAndUpdate(
-        { name: "LeaderBoard" },
-        { $push: { users: { user: updatedUser._id, position: position + 1 } } },
-        { new: true }
-      );
+    let position = 98; // Initialize position at 98
+    if (room && room.users.length > 0) {
+      position = room.users.length + 98; // Add length of users to initial position
+    } else if (!room) {
+      room = await Room.create({ name: 'LeaderBoard', users: [] });
     }
 
-    if (!updatedRoom) {
-      console.error("Room update or creation failed");
-      return res.status(500).json({ error: "Room update or creation failed" });
+    // Check if the user already exists in the leaderboard
+    const existingUserIndex = room.users.findIndex(user => user.user.toString() === updatedUser._id.toString());
+    if (existingUserIndex === -1) {
+      room.users.push({ user: updatedUser._id, position: position + 1 }); // Position should be 99 for the first user
+      await room.save();
     }
 
     return res.status(200).json({
-      message: "Joined the room",
-      room: updatedRoom,
+      message: 'Joined the room',
+      room,
       user: updatedUser,
     });
   } catch (error) {
-    console.error("Error in joinRoom:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error in joinRoom:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 // Get the updated leaderboard
+
 const getScores = async (req, res) => {
   try {
-    const scores = await Room.findOne({ name: "LeaderBoard" }).populate({
-      path: "users",
-      populate: { path: "user", model: "User" },
+    const scores = await Room.findOne({ name: 'LeaderBoard' }).populate({
+      path: 'users.user',
+      model: 'User',
     });
 
     if (!scores) {
-      return res.status(404).json({ message: "Leaderboard not found" });
+      return res.status(404).json({ message: 'Leaderboard not found' });
     }
 
     return res.status(200).json({ scores });
   } catch (err) {
-    console.error("Error in getScores:", err);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error('Error in getScores:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
+
 // Generate random referral code for new user
 const generateReferral = (length) => {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWZYZ0123456789";
-  let result = "";
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWZYZ0123456789';
+  let result = '';
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
@@ -108,109 +96,49 @@ const generateReferral = (length) => {
 // Checks referral code -> calls updateLeaderBoard -> sends email
 const verifyCode = async (code) => {
   try {
-    let leaderBoardCollection = await Room.findOne({ name: "LeaderBoard" }).populate({
-      path: "users",
-      populate: {
-        path: "user",
-        model: "User",
-      },
+    let leaderBoardCollection = await Room.findOne({ name: 'LeaderBoard' }).populate({
+      path: 'users.user',
+      model: 'User',
     });
     let leaderboard = leaderBoardCollection.users;
 
-    leaderboard.map(async (item, index) => {
-      if (item.user.referralCode === code) {
-        let start = index - 10;
-        let end = index - 1;
-        let insertItem = item;
-        let insertIndex = index;
-        let currentPosition = item.position;
+    // Find the user who referred the new user
+    let referrerIndex = leaderboard.findIndex(user => user.user.referralCode === code);
+    if (referrerIndex !== -1) {
+      let referrer = leaderboard[referrerIndex];
 
-        // Give the user 10 points and change the leaderboard
-        let updatedLeaderBoard = await updateLeaderBoardHandler(
-          start,
-          end,
-          leaderboard,
-          insertItem,
-          insertIndex,
-          currentPosition
-        );
+      // Improve the referrer's position by 1
+      referrer.position -= 1;
 
-        if (!updatedLeaderBoard) {
-          console.log("Error in updating leaderboard");
-          return;
-        }
-
-        // Save the updated one to the database
-        let newLeaderBoard = await Room.updateOne(
-          { name: "LeaderBoard" },
-          { users: updatedLeaderBoard },
-          { new: true }
-        );
-
-        console.log("Referred user got 10 points");
-
-        if (item.position <= 1) {
-          // Send email to the user
-          await emailHandler(item.user.email, item.user.name);
-        }
+      // Adjust the positions of users between the referrer and the new user
+      for (let i = referrerIndex - 1; i >= 0; i--) {
+        leaderboard[i].position += 1;
       }
-    });
+
+      // Sort the leaderboard based on the new positions
+      leaderboard.sort((a, b) => a.position - b.position);
+
+      // Save the updated leaderboard
+      await Room.updateOne(
+        { name: 'LeaderBoard' },
+        { users: leaderboard }
+      );
+
+      console.log('Referrer position updated');
+    }
   } catch (error) {
-    console.log("Error in rewards", error);
+    console.log('Error in rewards', error);
     return error;
   }
 };
 
-// Updates the leaderboard, changes the position and gives reward to referred user
-const updateLeaderBoardHandler = async (
-  start,
-  end,
-  leaderboard,
-  insertItem,
-  insertIndex,
-  currentPosition
-) => {
-  try {
-    if (start >= 0) {
-      leaderboard.map((item, index) => {
-        if (index >= start && index <= end) {
-          item.position += 1;
-        }
-      });
-    }
-    insertItem.position -= 1;
-
-    leaderboard[insertIndex] = insertItem;
-
-    function compare(a, b) {
-      const compareA = a.position;
-      const compareB = b.position;
-      let compare = 0;
-      if (compareA > compareB) {
-        compare = 1;
-      } else if (compareA < compareB) {
-        compare = -1;
-      }
-      return compare;
-    }
-
-    leaderboard = leaderboard.sort(compare);
-    console.log("Leaderboard updated");
-    return leaderboard;
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
-
-// Sends email to the referred user
 const emailHandler = async (to, name) => {
   try {
     const transporter = nodemailer.createTransport(emailConfig);
     const mailOptions = {
       from: process.env.EMAIL,
       to,
-      subject: "25% Offer",
+      subject: '25% Offer',
       html: `
         <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
           <div style="margin:50px auto;width:70%;padding:20px 0">
@@ -231,7 +159,7 @@ const emailHandler = async (to, name) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent to winner", info);
+    console.log('Email sent to winner', info);
   } catch (error) {
     console.log(error);
     return error;
