@@ -41,12 +41,19 @@ To set up the Waitlist Application, follow these steps:
 
 2. **MongoDB**: Install MongoDB on your system by following the instructions at [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community). 🍃
 
-3. **Clone the Repository**: Clone the Waitlist Application repository to your local machine:
+1. **Clone the Repository**:
+   - Clone the Waitlist Application repository to your local machine using Git. Open your terminal or command prompt and execute:
 
-   ```bash
-   git clone https://github.com/preethishanmugham/Waitlist_Application.git
-   cd Waitlist_Application
-   ```
+     ```bash
+     git clone https://github.com/Nithya-sri-R/Waitlist-application
+     cd Waitlist_Application
+     ```
+
+   - Alternatively, you can download the repository as a ZIP file and extract it on your local computer.
+
+     - Visit the [Waitlist Application GitHub repository](https://github.com/Nithya-sri-R/Waitlist-application).
+     - Click on the green "Code" button and select "Download ZIP".
+     - Extract the downloaded ZIP file to a directory of your choice on your local computer.
 
 ## 🛠️ Backend Setup
 
@@ -74,14 +81,16 @@ To set up the backend of the Waitlist Application, follow these steps:
      ```dotenv
      PORT=8000
    MONGO_URL=mongodb+srv://rnithyasri34:W6B9VfKIr9rb56RK@cluster0.qw5cqqh.mongodb.net/Waitlist-app?retryWrites=true&w=majority&appName=Cluster0
+   
      EMAIL=rnithyasri34@gmail.com
+   
      PASSWORD=vscgkjnpohapuksq
      JWT_SECRET=2bc347bc3d0726ef2079a1945bc1bcf14c71a188e2a207196e5708e0655e58c1
      ```
 
    .
 
-4. **Start the Backend Server**:
+5. **Start the Backend Server**:
    - Start the backend server by running:
 
      ```bash
@@ -90,7 +99,7 @@ To set up the backend of the Waitlist Application, follow these steps:
 
    - This will launch the backend server at `http://localhost:8000`.
 
-5. **API Routes**:
+6. **API Routes**:
    - Here are the API routes available in the backend:
 
      - **Register a User**:
@@ -215,52 +224,6 @@ To access the administrator area, log in with your admin credentials.
 
 - **Username**: rnithyasri34@gmail.com
 - **Password**: Saras@1976
-
-## API Routes
-User Routes
-POST https://8000/api/auth/register
-Registers a new user.
-Sample request body:
-   {
-  "name": "John",
-  "email": "john@example.com",
-  "password": "123"
-   }
-Login a User
-POST /api/auth/login
-Logs in an existing user.
-Sample request body:
-    {
-  "email": "john@example.com",
-  "password": "123"
-    }
-Send OTP:
-Method: POST
-URL: http://localhost:8000/api/auth/send-otp
-Headers: Authorization: Bearer <your_jwt_token>
-
-Verify OTP:
-Method: POST
-URL: http://localhost:8000/api/auth/verify-otp
-Headers: Authorization: Bearer <your_jwt_token>
-Body:
- {
-  "otp": "1234"
-}
-Join Room
-
-- **POST** `/api/room/join`
-  - Description: Allows a verified user to join a room.
-  - Middleware: `protectedMiddleware`
-  - Controller: `joinRoom`
-  - Example:
-    ```json
-    {
-      "userId": "your_user_id_here",
-      "roomId": "your_room_id_here"
-    }
-    ```
-  - Returns: Success message upon successfully joining the room.
 
 ## 🎉 Conclusion
 
