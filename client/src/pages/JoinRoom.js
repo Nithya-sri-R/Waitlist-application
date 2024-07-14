@@ -19,7 +19,15 @@ const JoinRoom = ({ socket }) => {
         </span>
         Home
       </p>
-      {user && user.verified ? <Referral socket={socket} /> : <Otp />}
+      {user && user.verified ? (
+        user.joinedRoom ? (
+          navigate("/leader-board") // Redirect to leader-board if the user has already joined a room
+        ) : (
+          <Referral socket={socket} /> // Show the referral component if the user has not joined a room
+        )
+      ) : (
+        <Otp />
+      )}
     </div>
   );
 };
