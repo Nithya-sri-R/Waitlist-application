@@ -4,10 +4,8 @@ import { emailConfig } from '../config/nodemailer.js';
 import Room from '../model/Room.js';
 import User from '../model/User.js';
 
-// Configure dotenv to load environment variables
 dotenv.config();
 
-// Register the user for the iPhone 14
 const joinRoom = async (req, res) => {
   try {
     const { email } = req.user;
@@ -37,17 +35,18 @@ const joinRoom = async (req, res) => {
     // Find the LeaderBoard room
     let room = await Room.findOne({ name: 'LeaderBoard' });
 
-    let position = 98; // Initialize position at 98
-    if (room && room.users.length > 0) {
-      position = room.users.length + 98; // Add length of users to initial position
-    } else if (!room) {
+    if (!room) {
       room = await Room.create({ name: 'LeaderBoard', users: [] });
     }
+
+    // Find the maximum position in the leaderboard
+    const maxPosition = room.users.reduce((max, user) => Math.max(max, user.position), 98);
+    const position = maxPosition + 1;
 
     // Check if the user already exists in the leaderboard
     const existingUserIndex = room.users.findIndex(user => user.user.toString() === updatedUser._id.toString());
     if (existingUserIndex === -1) {
-      room.users.push({ user: updatedUser._id, position: position + 1 }); // Position should be 99 for the first user
+      room.users.push({ user: updatedUser._id, position: position });
       await room.save();
     }
 
@@ -61,8 +60,6 @@ const joinRoom = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-// Get the updated leaderboard
 
 const getScores = async (req, res) => {
   try {
@@ -82,8 +79,6 @@ const getScores = async (req, res) => {
   }
 };
 
-
-// Generate random referral code for new user
 const generateReferral = (length) => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWZYZ0123456789';
   let result = '';
@@ -93,7 +88,6 @@ const generateReferral = (length) => {
   return result;
 };
 
-// Checks referral code -> calls updateLeaderBoard -> sends email
 const verifyCode = async (code) => {
   try {
     let leaderBoardCollection = await Room.findOne({ name: 'LeaderBoard' }).populate({
@@ -110,10 +104,32 @@ const verifyCode = async (code) => {
       // Improve the referrer's position by 1
       referrer.position -= 1;
 
-      // Adjust the positions of users between the referrer and the new user
-      for (let i = referrerIndex - 1; i >= 0; i--) {
-        leaderboard[i].position += 1;
+      // Ensure the referrer's new position is valid (cannot be less than 1)
+      if (referrer.position < 1) {
+        referrer.position = 1;
       }
+
+      // Adjust the position of the user who was previously in the new position of the referrer
+      for (let i = 0; i < leaderboard.length; i++) {
+        if (leaderboard[i].position === referrer.position && i !== referrerIndex) {
+          leaderboard[i].position = referrer.position + 1;
+          break;
+        }
+      }
+
+      // Check for duplicate positions and correct them
+      let positions = {};
+      leaderboard.forEach(user => {
+        if (positions[user.position]) {
+          // Find the next available position
+          let newPosition = user.position + 1;
+          while (positions[newPosition]) {
+            newPosition += 1;
+          }
+          user.position = newPosition;
+        }
+        positions[user.position] = true;
+      });
 
       // Sort the leaderboard based on the new positions
       leaderboard.sort((a, b) => a.position - b.position);
@@ -124,7 +140,7 @@ const verifyCode = async (code) => {
         { users: leaderboard }
       );
 
-      console.log('Referrer position updated');
+      console.log('Referrer position updated and duplicates corrected');
     }
   } catch (error) {
     console.log('Error in rewards', error);
@@ -167,4 +183,3 @@ const emailHandler = async (to, name) => {
 };
 
 export { getScores, joinRoom };
-
