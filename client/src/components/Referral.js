@@ -51,7 +51,7 @@ const Referral = ({ socket }) => {
         console.log("User updated:", response.data.user);
 
         socket.emit('update-leaderboard', "send me the updated leaderboard");
-        navigate(-2); // Navigate back after successful registration
+        navigate("/leader-board"); // Navigate back after successful registration
       } else {
         console.log("Unexpected status code:", response.status);
       }
