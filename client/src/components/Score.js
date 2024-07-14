@@ -7,17 +7,14 @@ const Score = ({ socket }) => {
   const { user, token } = UserState();
   const navigate = useNavigate();
   const [leaderboard, setLeaderboard] = useState([]);
-  // Effect to fetch leaderboard data and subscribe to socket events
 
-
-  // Socket.io setup
   useEffect(() => {
     socket.on("updated-leaderboard", (leaderboard) => {
       setLeaderboard(removeDuplicates(leaderboard.users));
     });
 
     getScores();
-  }, []);
+  }, [socket]);
 
   const getScores = async () => {
     try {
@@ -57,6 +54,20 @@ const Score = ({ socket }) => {
     console.log("Copied", text);
   };
 
+  const shareReferralCode = (text) => {
+    if (navigator.share) {
+      navigator.share({
+        title: "Referral Code",
+        text: `Use my referral code: ${text}`,
+        url: window.location.href,
+      })
+      .then(() => console.log("Referral code shared successfully"))
+      .catch((error) => console.error("Error sharing referral code", error));
+    } else {
+      console.log("Share API not supported in this browser");
+    }
+  };
+
   const userEntry = leaderboard.find((item) => item.user && item.user.email === user.email);
 
   return (
@@ -73,9 +84,9 @@ const Score = ({ socket }) => {
         Leaderboard
       </p>
       <div className="flex flex-col items-center justify-between w-[100%] mt-5 max-w-lg h-[100%]">
-        <div className="flex h-[65%] w-[90%] bg-white shadow-lg rounded-lg">
+        <div className="flex flex-col h-[65%] w-[90%] bg-white shadow-lg rounded-lg overflow-auto">
           <ul className="w-[100%] flex flex-col gap-2 p-4">
-            {leaderboard.map((item, index) => (
+            {leaderboard.slice(0, 10).map((item, index) => (
               <li
                 key={item._id}
                 className={`${
@@ -96,18 +107,26 @@ const Score = ({ socket }) => {
         {userEntry && (
           <div className="flex flex-col w-[90%] h-[30%] max-w-lg cursor-pointer">
             <div className="flex flex-col items-center justify-center border-3 rounded-lg shadow-lg mb-4 bg-orange-600 p-5">
-              <p
-                className="text-lg font-bold text-orange-200"
-                onClick={() => copyToClipboard(userEntry.user.referralCode)}
-              >
+              <p className="text-lg font-bold text-orange-200">
                 Your code{" "}
                 <span className="font-extrabold">
                   {userEntry.user.referralCode}
                 </span>
-                <span>
-                  <i className="fa-regular fa-clipboard mx-3"></i>
-                </span>
               </p>
+              <div className="flex gap-4 mt-3">
+                <button
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded"
+                  onClick={() => copyToClipboard(userEntry.user.referralCode)}
+                >
+                  Copy to Clipboard
+                </button>
+                <button
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded"
+                  onClick={() => shareReferralCode(userEntry.user.referralCode)}
+                >
+                  Share
+                </button>
+              </div>
             </div>
           </div>
         )}
