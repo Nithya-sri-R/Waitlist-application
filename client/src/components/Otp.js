@@ -64,7 +64,7 @@ const Otp = () => {
           const updatedUser = response.data.user;
           toast.success('Email verified');
           setUser(updatedUser);
-          navigate('/'); // Redirect to homepage or another route upon successful verification
+          navigate('/join-room'); // Redirect to homepage or another route upon successful verification
         } else {
           toast.error('Failed to verify OTP. Please try again.');
         }
